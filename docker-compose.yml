@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+  app: &app
+    tty: true
+    build:
+      context: .
+    command: sh -c './bin/dev'
+#    env_file: .env
+#    environment:
+#      WHATSAPP_ENDPOINT: 'http://whatsapp:3000'
+#      REDIS_URL: 'redis://redis:6379/1'
+    volumes:
+      - .:/usr/src/app
+      - node_modules:/usr/src/app/node_modules
+
+    ports:
+      - 3009:3000
+
+volumes:
+  node_modules:
