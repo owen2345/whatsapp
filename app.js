@@ -24,10 +24,24 @@ client.on('ready', () => {
 });
 client.initialize();
 
+// @example { media: { data: 'base64', mimetype: 'image/png', filename: 'image.png'} }
+// @example { media: { data: 'https://...', mimetype: 'image/png', filename: 'image.png'} }
+// @example { content: 'sample msg' }
 app.post('/message', async (req, res) => {
   const params = req.body;
   try {
-    const response = await client.sendMessage(params.phone, params.content);
+    if (params.media) {
+      if (params.media.data.startsWith('http')) {
+        let media = await MessageMedia.fromUrl(params.media.data);
+        media.filename = params.media.filename;
+        media.mimetype = params.media.mimetype;
+      } else {
+        let media = new MessageMedia(params.media.mimetype, params.media.data, params.media.filename);
+      }
+      let response = await client.sendMessage(params.phone, media);
+    } else { // text plain
+      let response = await client.sendMessage(params.phone, params.content);
+    }
     res.send(`Message successfully sent to ${params.phone}!`);
     process.stdout.write(`Message successfully sent to ${params.phone}!`);
   } catch (error) {
