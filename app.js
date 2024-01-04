@@ -1,4 +1,4 @@
-const { Client } = require('whatsapp-web.js');
+const { Client, MessageMedia } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 
 const express = require('express');
@@ -30,17 +30,19 @@ client.initialize();
 app.post('/message', async (req, res) => {
   const params = req.body;
   try {
+    let result = null;
     if (params.media) {
+      let media = null;
       if (params.media.data.startsWith('http')) {
-        let media = await MessageMedia.fromUrl(params.media.data);
+        media = await MessageMedia.fromUrl(params.media.data);
         media.filename = params.media.filename;
         media.mimetype = params.media.mimetype;
       } else {
-        let media = new MessageMedia(params.media.mimetype, params.media.data, params.media.filename);
+        media = new MessageMedia(params.media.mimetype, params.media.data, params.media.filename);
       }
-      let response = await client.sendMessage(params.phone, media);
+      result = await client.sendMessage(params.phone, media, { caption: params.media.caption || params.content });
     } else { // text plain
-      let response = await client.sendMessage(params.phone, params.content);
+      result = await client.sendMessage(params.phone, params.content);
     }
     res.send(`Message successfully sent to ${params.phone}!`);
     process.stdout.write(`Message successfully sent to ${params.phone}!`);
