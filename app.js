@@ -6,29 +6,36 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const client = new Client({
-  puppeteer: {
-    executablePath: '/usr/bin/google-chrome',
-    args: ['--disable-gpu', '--no-sandbox']
-  }
-});
+const sessions = {};
+app.get('/start/:key', async (req, res) => {
+  const key = req.params.key;
+  sessions[key] = new Client({
+    puppeteer: {
+      executablePath: '/usr/bin/google-chrome',
+      args: ['--disable-gpu', '--no-sandbox']
+    }
+  });
 
-client.on('qr', (qr) => {
-  console.log('QR Generated', qr);
-  console.log("Scan the QR code to send messages via post('/message', { phone: '59179716910@c.us', content: 'My message' })");
-  qrcode.generate(qr, { small: true });
-});
+  const client = sessions[key];
+  client.on('qr', (qr) => {
+    console.log(`QR Generated for session "${key}". Scan the following QR to start sending messages:`);
+    qrcode.generate(qr, { small: true });
+  });
 
-client.on('ready', () => {
-  console.log('Whatsapp client was connected and ready to send messages!!!');
+  client.on('ready', () => {
+    console.log(`Whatsapp client was connected for session "${key}" and ready to send messages via post('/message/${key}', { phone: '59179716910@c.us', content: 'My message' })`);
+  });
+
+  client.initialize();
+  res.send('Session started!');
 });
-client.initialize();
 
 // @example { media: { data: 'base64', mimetype: 'image/png', filename: 'image.png'} }
 // @example { media: { data: 'https://...', mimetype: 'image/png', filename: 'image.png'} }
 // @example { content: 'sample msg' }
-app.post('/message', async (req, res) => {
+app.post('/message/:key', async (req, res) => {
   const params = req.body;
+  const client = sessions[req.params.key];
   try {
     let result = null;
     if (params.media) {
@@ -53,5 +60,5 @@ app.post('/message', async (req, res) => {
 });
 
 app.listen(3000, () => {
-  console.log("Running service on port 3000... wait for QR to scan");
+  console.log("Running service on port 3000... call GET /start/:key to start a new session and POST /message/:key to send a message.");
 });

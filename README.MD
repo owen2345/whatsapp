@@ -4,8 +4,15 @@
 - Scan the code via whatsapp
 - Send messages via curl or postman
 
+## Start a new session
+As the project supports for multiple sessions, you need to start a session via GET `/start/:key`
+```bash
+curl http://localhost:3008/start/my-session1 # session to send messages using the first phone (account)
+curl http://localhost:3008/start/my-session2 # session to send messages using a second phone (account)
+```
+
 ## Send messages
-Send messages by calling `/message` endpoint like:
+Send messages by calling POST `/message/:key`
 - Send text messages
 ```bash
 curl -v \
@@ -13,7 +20,7 @@ curl -v \
   -H "Content-type: application/json" \
   -X POST \
   -d '{"phone": "5917090909@c.us", "content": "test message"}' \
-  http://localhost:3008/message
+  http://localhost:3008/message/my-session1
 ```
 
 - Send image messages (`data` can be a url or a base64 string)
@@ -23,7 +30,7 @@ curl -v \
   -H "Content-type: application/json" \
   -X POST \
   -d '{"phone": "5917090909@c.us", "content": "same img descr here", "media": { "data": "https://www.shutterstock.com/image-vector/sample-red-square-grunge-stamp-260nw-338250266.jpg", "mimetype": "image/png", "filename": "image.png" }}' \
-  http://localhost:3008/message
+  http://localhost:3008/message/my-session1
 ```
 
 ## How to use it in your project
@@ -32,7 +39,7 @@ curl -v \
     whatsapp:
       tty: true
       container_name: whatsapp
-      image: owencio/whatsapp-app:1.1
+      image: owencio/whatsapp-app:1.3
       ports:
         - "3008:3000"
 ``` 
@@ -70,7 +77,7 @@ spec:
     spec:
       containers:
         - name: *app_name
-          image: owencio/whatsapp-app:latest
+          image: owencio/whatsapp-app:1.3
           imagePullPolicy: Always
           ports:
             - containerPort: 6379
@@ -80,8 +87,8 @@ Use the internal service url, like: `curl http://wsapp-service.default.svc.clust
 
 ## Publish a new version
 ```
-docker build -t owencio/whatsapp-app:1.1 .
-docker push owencio/whatsapp-app:1.1
+docker build -t owencio/whatsapp-app:1.3 .
+docker push owencio/whatsapp-app:1.3
 ```
 
 ## Release note:
