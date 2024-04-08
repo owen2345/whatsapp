@@ -14,10 +14,6 @@ app.get('/start/:key', async (req, res) => {
       executablePath: '/usr/bin/google-chrome',
       args: ['--disable-gpu', '--no-sandbox']
     },
-    webVersionCache: { // tmp fix for: https://github.com/pedroslopez/whatsapp-web.js/issues/2861
-      type: 'remote',
-      remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html',
-    }
   });
 
   const client = sessions[key];
