@@ -87,8 +87,8 @@ Use the internal service url, like: `curl http://wsapp-service.default.svc.clust
 
 ## Publish a new version
 ```
-docker build -t owencio/whatsapp-app:1.4 .
-docker push owencio/whatsapp-app:1.4
+docker build -t owencio/whatsapp-app:1.6 .
+docker push owencio/whatsapp-app:1.6
 ```
 
 ## Release note:
