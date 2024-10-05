@@ -30,6 +30,13 @@ app.get('/start/:key', async (req, res) => {
   res.send('Session started!');
 });
 
+app.get('/stop/:key', async (req, res) => {
+  const key = req.params.key;
+  const client = sessions[key];
+  console.log("::::::::destroying client", key);
+  if (client) client.destroy();
+});
+
 // @example { media: { data: 'base64', mimetype: 'image/png', filename: 'image.png'} }
 // @example { media: { data: 'https://...', mimetype: 'image/png', filename: 'image.png'} }
 // @example { content: 'sample msg' }
