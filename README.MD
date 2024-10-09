@@ -9,6 +9,7 @@ As the project supports for multiple sessions, you need to start a session via G
 ```bash
 curl http://localhost:3008/start/my-session1 # session to send messages using the first phone (account)
 curl http://localhost:3008/start/my-session2 # session to send messages using a second phone (account)
+curl http://localhost:3008/stop/my-session # close this session
 ```
 
 ## Send messages
@@ -87,8 +88,8 @@ Use the internal service url, like: `curl http://wsapp-service.default.svc.clust
 
 ## Publish a new version
 ```
-docker build -t owencio/whatsapp-app:1.6 .
-docker push owencio/whatsapp-app:1.6
+docker build -t owencio/whatsapp-app:1.7.1 .
+docker push owencio/whatsapp-app:1.7.1
 ```
 
 ## Release note:

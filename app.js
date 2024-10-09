@@ -33,8 +33,9 @@ app.get('/start/:key', async (req, res) => {
 app.get('/stop/:key', async (req, res) => {
   const key = req.params.key;
   const client = sessions[key];
-  console.log("::::::::destroying client", key);
+
   if (client) client.destroy();
+  res.send('Session closed!');
 });
 
 // @example { media: { data: 'base64', mimetype: 'image/png', filename: 'image.png'} }
