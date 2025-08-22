@@ -37,12 +37,18 @@ curl -v \
 ## How to use it in your project
 - via docker-compose.yml
 ```yaml
-    whatsapp:
-      tty: true
-      container_name: whatsapp
-      image: owencio/whatsapp-app:1.3
-      ports:
-        - "3008:3000"
+  whatsapp:
+    tty: true
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=4096"
+    container_name: whatsapp
+    image: owencio/whatsapp-app:1.5
+    ports: [] # no need to expose port as it is only used between services
+    restart: unless-stopped
+    networks:
+      - shared_services
+    volumes:
+      - ./whatsapp-sessions:/usr/src/app/.wwebjs_auth
 ``` 
 - Via kubernetes
 ```yaml
@@ -88,8 +94,8 @@ Use the internal service url, like: `curl http://wsapp-service.default.svc.clust
 
 ## Publish a new version
 ```
-docker build -t owencio/whatsapp-app:1.7.1 .
-docker push owencio/whatsapp-app:1.7.1
+docker build -t owencio/whatsapp-app:1.8.2 .
+docker push owencio/whatsapp-app:1.8.2
 ```
 
 ## Release note:

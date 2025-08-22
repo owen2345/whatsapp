@@ -1,4 +1,4 @@
-const { Client, MessageMedia } = require('whatsapp-web.js');
+const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 
 const express = require('express');
@@ -10,6 +10,7 @@ const sessions = {};
 app.get('/start/:key', async (req, res) => {
   const key = req.params.key;
   sessions[key] = new Client({
+    authStrategy: new LocalAuth({ clientId: key }), // one folder per session key
     puppeteer: {
       executablePath: '/usr/bin/google-chrome',
       args: ['--disable-gpu', '--no-sandbox']
