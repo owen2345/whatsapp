@@ -45,6 +45,9 @@ app.get('/stop/:key', async (req, res) => {
 app.post('/message/:key', async (req, res) => {
   const params = req.body;
   const client = sessions[req.params.key];
+
+  if (!client) console.error('Client not initialized!', req.params.key, 'Existing sessions:', Object.keys(sessions));
+
   try {
     let result = null;
     if (params.media) {
