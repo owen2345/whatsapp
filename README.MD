@@ -84,7 +84,7 @@ spec:
     spec:
       containers:
         - name: *app_name
-          image: owencio/whatsapp-app:1.3
+          image: owencio/whatsapp-app:1.8.4
           imagePullPolicy: Always
           ports:
             - containerPort: 6379
@@ -94,8 +94,8 @@ Use the internal service url, like: `curl http://wsapp-service.default.svc.clust
 
 ## Publish a new version
 ```
-docker build -t owencio/whatsapp-app:1.8.3 .
-docker push owencio/whatsapp-app:1.8.3
+docker build -t owencio/whatsapp-app:1.8.4 .
+docker push owencio/whatsapp-app:1.8.4
 ```
 
 ## Release note:
