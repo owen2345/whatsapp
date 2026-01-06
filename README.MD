@@ -20,8 +20,8 @@ curl -v \
   -H "Accept: application/json" \
   -H "Content-type: application/json" \
   -X POST \
-  -d '{"phone": "5917090909@c.us", "content": "test message"}' \
-  http://localhost:3008/message/my-session1
+  -d '{"phone": "59179716902@c.us", "content": "test message"}' \
+  http://localhost:3000/message/owen
 ```
 
 - Send image messages (`data` can be a url or a base64 string)

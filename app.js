@@ -7,6 +7,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const sessions = {};
+const sessionsData = {};
 app.get('/start/:key', async (req, res) => {
   const key = req.params.key;
   sessions[key] = new Client({
@@ -16,6 +17,7 @@ app.get('/start/:key', async (req, res) => {
       args: ['--disable-gpu', '--no-sandbox']
     },
   });
+  sessionsData[key] = { webhookUrl: req.query.webhook_url || null, webhookToken: req.query.webhook_token || null };
 
   const client = sessions[key];
   client.on('qr', (qr) => {
@@ -26,6 +28,40 @@ app.get('/start/:key', async (req, res) => {
   client.on('ready', () => {
     console.log(`Whatsapp client was connected for session "${key}" and ready to send messages via post('/message/${key}', { phone: '59179716910@c.us', content: 'My message' })`);
   });
+
+  // http://localhost:3000/start/bot?webhook_url=https%3A%2F%2Fcupula.dev%2Fwhatsapp%2Fbot&webhook_token=secret
+  if (sessionsData[key].webhookUrl) {
+    console.log(`Webhook configured for session "${key}":`, sessionsData[key].webhookUrl);
+
+    let bot_started_at = Math.floor(Date.now() / 1000);
+    client.on("message", async (msg) => {
+      try {
+        // Ignore messages before bot was ready
+        if (msg.timestamp < bot_started_at) return;
+        // Ignore groups & broadcasts
+        if (msg.from.includes("@g.us") || msg.from === "status@broadcast") return;
+        // Ignore messages sent by yourself
+        if (msg.fromMe) return;
+        if (!msg.body) return; // ignore media-only messages
+
+        const response = await fetch(sessionsData[key].webhookUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Bot-Token": sessionsData[key].webhookToken
+          },
+          body: JSON.stringify({ phone: msg.from.replace("@c.us", ""), message: msg.body })
+        });
+        const data = await response.json();
+        if (data?.reply) {
+          await client.sendMessage(msg.from, data.reply);
+        }
+      } catch (error) {
+        console.error("❌ Bot error:", error.message);
+        await client.sendMessage(msg.from, "⚠️ Ocurrió un error. Un asesor te atenderá en breve.");
+      }
+    });
+  }
 
   client.initialize();
   res.send('Session started!');
