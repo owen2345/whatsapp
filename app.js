@@ -42,7 +42,6 @@ app.get('/start/:key', async (req, res) => {
         if (msg.from.includes("@g.us") || msg.from === "status@broadcast") return;
         // Ignore messages sent by yourself
         if (msg.fromMe) return;
-        if (!msg.body) return; // ignore media-only messages
 
         const response = await fetch(sessionsData[key].webhookUrl, {
           method: "POST",
@@ -50,7 +49,7 @@ app.get('/start/:key', async (req, res) => {
             "Content-Type": "application/json",
             "X-Bot-Token": sessionsData[key].webhookToken
           },
-          body: JSON.stringify({ phone: msg.from.replace("@c.us", ""), message: msg.body })
+          body: JSON.stringify({ phone: msg.from.replace("@c.us", ""), message: msg.body, kind: msg.type })
         });
         const data = await response.json();
         if (data?.reply) {
