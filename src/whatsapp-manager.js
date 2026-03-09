@@ -69,19 +69,35 @@ async function startClient(accountId) {
 
   // ── Ready ────────────────────────────────────────────────────────────────
   client.on('ready', async () => {
-    const info = client.info;
-    const phone = info?.wid?.user || null;
-    if (phone) stmts.updatePhone.run(phone, accountId);
+  const info = client.info;
+  const phone = info?.wid?.user || null;
+  if (phone) stmts.updatePhone.run(phone, accountId);
 
-    const entry = clients.get(accountId);
-    if (entry) entry.qrDataUrl = null;
-    setStatus(accountId, 'connected');
-    emit('status', { accountId, status: 'connected', phone });
-  });
+  const entry = clients.get(accountId);
+  if (entry) {
+    entry.qrDataUrl = null;
+    entry.readyAt = Math.floor(Date.now() / 1000); // unix seconds
+  }
+  setStatus(accountId, 'connected');
+  emit('status', { accountId, status: 'connected', phone });
+});
 
   // ── Message received ─────────────────────────────────────────────────────
   client.on('message', async (msg) => {
     if (msg.fromMe) return; // ignore outbound echoes
+    
+    // Ignore status broadcasts, WhatsApp system messages and newsletters
+  if (msg.from === 'status@broadcast') return;
+  if (msg.from?.endsWith('@newsletter')) return;
+  if (msg.type === 'e2e_notification') return;
+  if (msg.type === 'notification_template') return;
+  if (msg.type === 'call_log') return;
+
+
+    // Ignore messages older than when this session became ready (replayed history)
+    const entry = clients.get(accountId);
+    if (entry?.readyAt && msg.timestamp < entry.readyAt) return;
+
 
     const acc = stmts.getAccountById.get(accountId);
     const msgId = uuidv4();

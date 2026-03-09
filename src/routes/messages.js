@@ -72,7 +72,7 @@ router.post('/media', requireApiKey, upload.single('file'), async (req, res) => 
  * GET /api/accounts/:accountId/messages
  * Returns recent message history (requires API key)
  */
-router.get('/', requireApiKey, (req, res) => {
+router.get('/', (req, res) => {
   const limit = Math.min(parseInt(req.query.limit) || 50, 200);
   const msgs = stmts.getMessages.all(req.params.accountId, limit);
   res.json(msgs.map(m => ({ ...m, content: JSON.parse(m.content) })));

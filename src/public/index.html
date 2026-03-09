@@ -1011,7 +1011,7 @@ function renderDetail() {
   document.getElementById('api-endpoint').textContent = `POST /api/accounts/${a.id}/messages`;
 
   // API key — only shown if stored in session (created this session)
-  const stored = sessionStorage.getItem(`apikey_${a.id}`);
+  const stored = localStorage.getItem(`apikey_${a.id}`);
   document.getElementById('api-key').textContent = stored || '(created in previous session)';
 
   // QR / status
@@ -1132,7 +1132,7 @@ async function sendMessage() {
   const to   = document.getElementById('send-to').value.trim();
   const type = document.getElementById('send-type').value;
   const res  = document.getElementById('send-result');
-  const apiKey = sessionStorage.getItem(`apikey_${currentAccount.id}`);
+  const apiKey = localStorage.getItem(`apikey_${currentAccount.id}`);
 
   if (!to) { toast('Enter a destination number', 'error'); return; }
   if (!apiKey) { toast('API key only available for accounts created this session', 'error'); return; }
@@ -1207,7 +1207,7 @@ async function submitAccount() {
   } else {
     const result = await api('POST', '/api/accounts', { name, phone, webhook_url });
     if (result.api_key) {
-      sessionStorage.setItem(`apikey_${result.id}`, result.api_key);
+      localStorage.setItem(`apikey_${result.id}`, result.api_key);
     }
     toast('Account created — scan QR to connect', 'success');
   }

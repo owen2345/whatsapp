@@ -68,7 +68,7 @@ const stmts = {
   getAccountById:   db.prepare('SELECT * FROM accounts WHERE id = ?'),
   getAccountByKey:  db.prepare('SELECT * FROM accounts WHERE api_key = ?'),
   insertAccount:    db.prepare('INSERT INTO accounts (id,name,phone,webhook_url,api_key) VALUES (?,?,?,?,?)'),
-  updateAccount:    db.prepare('UPDATE accounts SET name=?,phone=?,webhook_url=?,updated=unixepoch() WHERE id=?'),
+  updateAccount:    db.prepare('UPDATE accounts SET name=?,phone=?,webhook_url=? WHERE id=?'),
   updateStatus:     db.prepare('UPDATE accounts SET status=? WHERE id=?'),
   updatePhone:      db.prepare('UPDATE accounts SET phone=? WHERE id=?'),
   deleteAccount:    db.prepare('DELETE FROM accounts WHERE id=?'),
