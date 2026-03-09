@@ -35,7 +35,7 @@ npm run dev
 ```
 
 Open **http://localhost:3000** in your browser.
-
+Production: http://137.184.166.160:3011/ (check pass manager for access)
 ---
 
 ## Environment Variables
